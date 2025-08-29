@@ -1,25 +1,42 @@
-- name: Build with MSBuild
-  run: msbuild pbw.vcxproj /p:Configuration=Release /p:Platform=x64 /p:OutDir=Release\
+# This is the name of the workflow, which will appear in the "Actions" tab of your GitHub repository.
+name: Build Windows Executable
 
-- name: Upload artifact
-  uses: actions/upload-artifact@v4
-  with:
-    name: pbw-exe
-    path: Release/pbw.exe
+# This section defines when the workflow will run.
+on:
+  # Run on every push to any branch.
+  push:
+    branches: [ "**" ]
+  # Also run on pull requests targeting any branch.
+  pull_request:
+    branches: [ "**" ]
 
-release:
-  runs-on: windows-latest
-  needs: build
-  steps:
-    - name: Download artifact
-      uses: actions/download-artifact@v4
-      with:
-        name: pbw-exe
-        path: .
+# This section defines the jobs to be run.
+jobs:
+  # We have a single job named "build".
+  build:
+    # This specifies that the job must run on the latest available Windows virtual environment.
+    # This is crucial because your code depends on the Windows API.
+    runs-on: windows-latest
 
-    - name: Create GitHub Release
-      uses: softprops/action-gh-release@v2
-      with:
-        files: pbw.exe
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    # This section lists the individual steps that make up the job.
+    steps:
+      # Step 1: Check out your repository code.
+      # This downloads your source code (like pbw.c) into the runner.
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Step 2: Compile the C file into an executable.
+      # We use the gcc compiler (from MinGW) to compile pbw.c and create an output file named pbw.exe.
+      - name: Compile C file
+        run: gcc pbw.c -o pbw.exe
+
+      # Step 3: Upload the build result (the .exe file).
+      # This step takes the generated pbw.exe and saves it as a "build artifact".
+      # You'll be able to download this file from the workflow run's summary page.
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          # The name of the artifact bundle.
+          name: windows-executable
+          # The path to the file(s) to upload.
+          path: pbw.exe
