@@ -4,7 +4,7 @@ name: Build and Release
 # This section defines the trigger
 on:
   release:
-    # This workflow runs only when a new release is "created" (not edited or deleted)
+    # This workflow runs only when a new release is "created"
     types: [created]
 
 # A single job named "build-release"
@@ -12,6 +12,13 @@ jobs:
   build-release:
     # It must run on a Windows environment
     runs-on: windows-latest
+
+    # --- ADD THIS BLOCK ---
+    # Grant the job permission to write to the repository's contents,
+    # which is required for uploading release assets.
+    permissions:
+      contents: write
+    # ----------------------
 
     # The steps for the job
     steps:
@@ -25,10 +32,7 @@ jobs:
 
       # Step 3: Upload the compiled .exe to the GitHub Release
       - name: Upload to Release
-        # This command uses the GitHub CLI (gh), which is pre-installed on the runner.
-        # It uploads the specified file to the release that triggered this workflow.
         run: gh release upload "${{ github.event.release.tag_name }}" pbw.exe
         env:
-          # The GITHUB_TOKEN is a special secret that gives the workflow permission
-          # to upload files to your repository's releases. You don't need to set it up.
+          # This token now has the 'contents: write' permission
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
