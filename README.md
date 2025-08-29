@@ -1,10 +1,9 @@
 # PocketBase Watcher
 
-A tiny native Windows watcher for [PocketBase](https://pocketbase.io/) that automatically restarts  
+A tiny native Windows Hot Reload / Live Reload / Watcher for [PocketBase](https://pocketbase.io/) that automatically restarts  
 `pocketbase.exe serve --dev` whenever files in the `pb_hooks` folder change.
 
 ---
-
 ## ✨ Features
 - Watches the `pb_hooks` folder using the native Windows API
 - Restarts PocketBase instantly when a file created/modified/deleted
