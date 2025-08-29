@@ -1,42 +1,34 @@
-# This is the name of the workflow, which will appear in the "Actions" tab of your GitHub repository.
-name: Build Windows Executable
+# Name for the workflow
+name: Build and Release
 
-# This section defines when the workflow will run.
+# This section defines the trigger
 on:
-  # Run on every push to any branch.
-  push:
-    branches: [ "**" ]
-  # Also run on pull requests targeting any branch.
-  pull_request:
-    branches: [ "**" ]
+  release:
+    # This workflow runs only when a new release is "created" (not edited or deleted)
+    types: [created]
 
-# This section defines the jobs to be run.
+# A single job named "build-release"
 jobs:
-  # We have a single job named "build".
-  build:
-    # This specifies that the job must run on the latest available Windows virtual environment.
-    # This is crucial because your code depends on the Windows API.
+  build-release:
+    # It must run on a Windows environment
     runs-on: windows-latest
 
-    # This section lists the individual steps that make up the job.
+    # The steps for the job
     steps:
-      # Step 1: Check out your repository code.
-      # This downloads your source code (like pbw.c) into the runner.
+      # Step 1: Check out the repository's code
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # Step 2: Compile the C file into an executable.
-      # We use the gcc compiler (from MinGW) to compile pbw.c and create an output file named pbw.exe.
+      # Step 2: Compile the C file into pbw.exe
       - name: Compile C file
         run: gcc pbw.c -o pbw.exe
 
-      # Step 3: Upload the build result (the .exe file).
-      # This step takes the generated pbw.exe and saves it as a "build artifact".
-      # You'll be able to download this file from the workflow run's summary page.
-      - name: Upload artifact
-        uses: actions/upload-artifact@v4
-        with:
-          # The name of the artifact bundle.
-          name: windows-executable
-          # The path to the file(s) to upload.
-          path: pbw.exe
+      # Step 3: Upload the compiled .exe to the GitHub Release
+      - name: Upload to Release
+        # This command uses the GitHub CLI (gh), which is pre-installed on the runner.
+        # It uploads the specified file to the release that triggered this workflow.
+        run: gh release upload "${{ github.event.release.tag_name }}" pbw.exe
+        env:
+          # The GITHUB_TOKEN is a special secret that gives the workflow permission
+          # to upload files to your repository's releases. You don't need to set it up.
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
