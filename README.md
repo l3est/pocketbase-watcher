@@ -8,14 +8,13 @@ A tiny native Windows Hot Reload / Live Reload / Watcher for [PocketBase](https:
 - Restarts PocketBase instantly when a file created/modified/deleted
 
 ## ▶️ Usage
-Download the [Release](https://github.com/l3est/pocketbase-watcher/releases/tag/v1.0.0) file
+Download the [Release](https://github.com/l3est/pocketbase-watcher/releases/tag/v1.0.0) file__
 Copy `pbw.exe` to the same folder as `pocketbase.exe` and run it
 
 ## 🛠 Building from Source
 
 ### Requirements
-Visual Studio with Desktop development with C++ workload
-
+Visual Studio with Desktop development with C++ workload__
 Windows SDK installed
 
 ### Steps
